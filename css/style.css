@@ -1,0 +1,23 @@
+#menu-toggle {
+    margin-right:5px;
+}
+.margin-separation-20 {
+    margin-top:20px;
+}
+.margin-separation-10 {
+    margin-top:10px;
+}
+.margin-separation-5 {
+    margin-top:5px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.margin-left-10 {
+    margin-left: 10px;
+}
+.margin-left-5 {
+    margin-left:5px;
+}
