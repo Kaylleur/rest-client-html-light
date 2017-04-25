@@ -25,6 +25,11 @@ $(document).ready(function(){
     $('#url').keyup(function(e){
        if(e.which == 13) $('#btnSend').click();
     });
+
+
+    $.ajax({
+        url : 'http://localhost:15278/session/windowsAuthentication'
+    })
 });
 
 //toastr config

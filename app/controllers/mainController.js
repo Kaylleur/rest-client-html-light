@@ -5,11 +5,14 @@ app.controller('MainController',
     $scope.methods =['GET','HEAD','POST','PUT','DELETE','TRACE','OPTIONS','CONNECT','PATCH'];
     $scope.contentType = ["JSON","XML","text/plain"];
     $scope.histories = [];
-    $scope.request ={};
+    $scope.request = {};
     $scope.request.method = 'GET';
-    $scope.request.headers = [{}];
+    $scope.request.headers = {};
+    $scope.headers = [{}];
     $scope.preview = false;
     $scope.btnPreview = 'Preview';
+    $scope.loader = false;
+    $scope.bodyType = $scope.contentType[0];
 
     $scope.updateMethod = function(method){
         $scope.nameMethod = method + ' ';
@@ -17,11 +20,11 @@ app.controller('MainController',
     };
 
     $scope.addHeader = function(){
-        $scope.request.headers.push({});
+        $scope.headers.push({});
     };
 
     $scope.removeHeader = function(index){
-        $scope.request.headers.splice(index,1);
+        $scope.headers.splice(index,1);
     };
 
     $scope.showPreview = function(){
@@ -33,7 +36,7 @@ app.controller('MainController',
         var body = $scope.request.data;
         var res = null;
         if(body) {
-            switch ($scope.request.contentType) {
+            switch ($scope.bodyType) {
                 case "JSON" :
                     res = validator.isJSON(body);
                     break;
@@ -43,7 +46,10 @@ app.controller('MainController',
                 case "text/plain":
                     break;
             }
-        }else $scope.bodyClass= "";
+        }else {
+            $scope.bodyClass= "";
+            if(withToast) toastr.info("Body is empty.");
+        }
         //display
         if(res){
             $scope.bodyClass= "has-success";
@@ -57,12 +63,12 @@ app.controller('MainController',
 
     $scope.beautifyBody = function(){
         if($scope.controlBody(false)){
-            switch ($scope.request.contentType) {
+            switch ($scope.bodyType) {
                 case "JSON" :
                     $scope.request.data = beautifyJSON($scope.request.data);
                     break;
                 case 'XML':
-                    $scope.request.data = beautifyXML($scope.request.data)
+                    $scope.request.data = beautifyXML($scope.request.data);
                     break;
             }
         }else{
@@ -71,19 +77,28 @@ app.controller('MainController',
     };
 
     $scope.send = function(){
+        $scope.loader = true;
         $scope.histories.push(clone($scope.request));
+        for (var i = 0; i < $scope.headers.length; i++) {
+            var header = $scope.headers[i];
+            $scope.request.headers[header.key] = header.value;
+        }
         try {
             $http($scope.request)
                 .then(function(response){
                     //success
                     $scope.statusClass = 'label-success';
                     $scope.response = response;
-                },function(err){
+                })
+                .catch(function(err){
                     //error
                     $scope.statusClass = err.status < 500 ? 'label-warning' : 'label-danger';
                     $scope.response = err;
                     console.error(err);
                 })
+                .then(function(){
+                    $scope.loader = false;
+                });
         }catch(err){
             toastr.error('Error on the request !');
             console.log(err);

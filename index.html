@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/simple-sidebar.css">
     <link rel="stylesheet" href="css/toastr.min.css">
+    <link rel="stylesheet" href="css/spinkit.css">
     <link rel="shortcut icon" href="pictures/favicon.png">
 </head>
 <body>
@@ -36,7 +37,7 @@
                             </div>
                             <input id="url" type="text" ng-model="request.url" placeholder="Enter your url here..." class="form-control">
                             <div class="input-group-btn">
-                                <button id="btnSend" ng-click="send()" class="btn btn-primary">Send<span class="glyphicon glyphicon-send"></span></button>
+                                <button id="btnSend" ng-click="send()" class="btn btn-primary">Send <span class="glyphicon glyphicon-send"></span></button>
                             </div>
                         </div>
                     </div>
@@ -50,7 +51,7 @@
                         </ul>
                         <div class="tab-content margin-separation-20">
                             <div id="headers" role="tabpanel" class="tab-pane fade in active">
-                                <div ng-repeat="(index,header) in request.headers" class="row margin-separation-10">
+                                <div ng-repeat="(index,header) in headers" class="row margin-separation-10">
                                     <div class="col-lg-5">
                                         <input type="text" ng-model="header.key" placeholder="key..." class="form-control">
                                     </div>
@@ -58,7 +59,7 @@
                                         <input type="text" ng-model="header.value" placeholder="value..." class="form-control">
                                     </div>
                                     <div class="col-lg-2">
-                                        <button ng-click="removeHeader(index)" ng-disabled="request.headers.length &lt; 2" class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></button>
+                                        <button ng-click="removeHeader(index)" ng-disabled="headers.length < 2" class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></button>
                                     </div>
                                 </div>
                                 <div class="row margin-separation-20">
@@ -70,12 +71,12 @@
                             <div id="body" role="tabpanel" class="tab-pane fade">
                                 <div class="row margin-separation-10"></div>
                                 <div class="col-lg-3">
-                                    <select ng-model="bodyType" ng-change="controlBody(true)" ng-init="bodyType = contentType[0]" ng-options="type as type for type in contentType" class="form-control"></select>
+                                    <select ng-model="bodyType" ng-change="controlBody(true)" ng-options="type as type for type in contentType" class="form-control"></select>
                                 </div>
                                 <div class="col-lg-4">
                                     <div role="group" class="btn-group">
-                                        <button ng-click="controlBody(true)" ng-disabled="bodyType == &quot;text/plain&quot;" class="btn btn-primary">Verify</button>
-                                        <button ng-click="beautifyBody()" ng-disabled="bodyType == &quot;text/plain&quot;" class="btn btn-primary">Beautify</button>
+                                        <button ng-click="controlBody(true)" ng-disabled="bodyType == 'text/plain';" class="btn btn-primary">Verify</button>
+                                        <button ng-click="beautifyBody()" ng-disabled="bodyType == 'text/plain'" class="btn btn-primary">Beautify</button>
                                     </div>
                                 </div>
                                 <div class="col-lg-12 margin-separation-10 form-group {{bodyClass}}">
@@ -89,6 +90,18 @@
                 <hr>
                 <div class="row">
                     <div class="col-lg-12 margin-separation-20">
+                        <div class="row" ng-show="loader">
+                            <div class="col-lg-12 text-center">
+                                <div class="sk-wave sk-wave-primary">
+                                    <div class="sk-rect sk-rect1"></div>
+                                    <div class="sk-rect sk-rect2"></div>
+                                    <div class="sk-rect sk-rect3"></div>
+                                    <div class="sk-rect sk-rect4"></div>
+                                    <div class="sk-rect sk-rect5"></div>
+                                </div>
+                                Loading please wait...
+                            </div>
+                        </div>
                         <h4>Response<span ng-class="statusClass" ng-show="statusClass" class="label margin-left-5">{{response.status}}</span></h4>
                         <ul id="response" role="tablist" class="nav nav-tabs">
                             <li><a href="#" data-target="#responseHeaders" role="tab" data-toggle="tab" aria-controls="headers">Headers</a></li>
